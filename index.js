@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb+srv://webdbUser:QT08QSlPZjRdoazt@cluster0.jnj91of.mongodb.net/?appName=Cluster0";
+const uri = process.env.MONGODB_URI || "mongodb+srv://webdbUser:QT08QSlPZjRdoazt@cluster0.jnj91of.mongodb.net/?appName=Cluster0";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -17,6 +17,13 @@ const client = new MongoClient(uri, {
   }
 });
 
+app.use(cors({
+  
+  origin: ["https://earnest-biscochitos-c1de54.netlify.app",
+    "http://localhost:5173"
+  ],
+  credentials: true
+}));
 
 let productionCollection;
 let eventsCollection;

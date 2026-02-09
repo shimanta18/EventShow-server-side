@@ -65,13 +65,22 @@ app.get('/products', async (req, res) => {
   res.send(products);
 });
 
+const connectDB = async () => {
+  if (eventsCollection) return; // Already connected
+  await client.connect();
+  const db = client.db('web_db');
+  eventsCollection = db.collection('events');
+  joinedEventsCollection = db.collection('joined_events');
+  productionCollection = db.collection('products');
+};
 
 app.get('/events', async (req, res) => {
   try {
-    if (!eventsCollection) return res.status(503).send({ error: 'Database not ready' });
+    await connectDB(); // Ensure connection is ready
     const events = await eventsCollection.find().toArray();
     res.send(events);
   } catch (error) {
+    console.error(error);
     res.status(500).send({ error: 'Failed to fetch events' });
   }
 });
@@ -121,3 +130,4 @@ app.get('/joined-events/user/:userId', async (req, res) => {
 app.listen(port, () => {
   console.log(`Smart server is running on port: ${port}`);
 });
+module.exports = app;
